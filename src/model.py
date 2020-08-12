@@ -1,6 +1,5 @@
 """
 heat_transfer/src/model.py
-
 """
 
 from keras import Model, optimizers

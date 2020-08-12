@@ -1,6 +1,5 @@
 """
 heat_transfer/src/heat_dist.py
-
 """
 
 import numpy as np

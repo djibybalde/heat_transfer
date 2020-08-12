@@ -1,0 +1,95 @@
+%% 2D heat transfer
+
+% =======================================================
+% inputs
+
+ro      = 7600; %density (kg/m3)
+vod     = 47;   %heat conductivity (W/m/K)
+Cp      = 480;  %heat capacity (J/kg)
+T0      = 400;  %initial temperature (K)
+TH      = 800;  %Top edge temperature (K)
+TD      = 300;  %Bottom edge temperature (K)
+TP      = 200;  %Left edge temperature (K)
+TL      = 500;  %Right edge temperature (K)
+L       = 1;    %Modul
+M       = 5;    %Edge length (m)
+N       = 50;   %Number of points
+tkon    = 500;  %Final time (s)
+
+% ===================================================
+% calculation
+a       = vod/ro/Cp;
+% length step
+dx      = L/(N-1);
+% time step
+dt      =((dx)^2)/M/a;
+t       = dt;
+
+% =======================================================
+% initialy temperatures
+Tpoc    = zeros(N,N);
+for i=1:1:N
+    for j=1:1:N
+        Tpoc(i,j) = T0;
+    end
+end
+
+h       = figure(1);
+h_ax    = axes(h);
+
+while t < tkon
+    
+    % ============================================================
+    j=1;
+    i=1;
+    Tpoc(i,j)=(Tpoc(i+1,j)+TL+TD+Tpoc(i,j+1)+(M-4)*Tpoc(i,j))/M;
+    j=N;
+    i=1;
+    Tpoc(i,j)=(Tpoc(i+1,j)+TD+Tpoc(i,j-1)+TP+(M-4)*Tpoc(i,j))/M;
+    j=1;
+    i=N;
+    Tpoc(i,j)=(TH+Tpoc(i-1,j)+TL+Tpoc(i,j+1)+(M-4)*Tpoc(i,j))/M;
+    j=N;
+    i=N;
+    Tpoc(i,j)=(TP+Tpoc(i-1,j)+Tpoc(i,j-1)+TP+(M-4)*Tpoc(i,j))/M;
+    % ==========================================================
+    i=1;
+    for j=2:1:N-1
+        Tpoc(i,j)=(Tpoc(i+1,j)+TD+Tpoc(i,j-1)+Tpoc(i,j+1)+(M-4)*Tpoc(i,j))/M;
+    end
+    i=N;
+    for j=2:1:N-1
+        Tpoc(i,j)=(TH+Tpoc(i-1,j)+Tpoc(i,j-1)+Tpoc(i,j+1)+(M-4)*Tpoc(i,j))/M;
+    end
+    j=1;
+    for i=2:1:N-1
+        Tpoc(i,j)=(Tpoc(i+1,j)+Tpoc(i-1,j)+TL+Tpoc(i,j+1)+(M-4)*Tpoc(i,j))/M;
+    end
+    j=N;
+    for i=2:1:N-1
+        Tpoc(i,j)=(Tpoc(i+1,j)+Tpoc(i-1,j)+Tpoc(i,j-1)+TP+(M-4)*Tpoc(i,j))/M;
+    end
+    % ===========================================================
+    for i=2:1:N-1
+        for j=2:1:N-1
+            Tpoc(i,j)=(Tpoc(i+1,j)+Tpoc(i-1,j)+Tpoc(i,j-1)+Tpoc(i,j+1)+(M-4)*Tpoc(i,j))/M;
+        end
+    end
+    
+    % ===========================================================
+    % graph
+    
+    c = jet;
+    pause(0.02)
+    pcolor(h_ax, Tpoc)
+    retazec = sprintf('Time=%g s',t);
+    title(retazec);
+    colormap(c);
+    colorbar;
+    shading interp;
+    
+    % --------
+    t=t+dt;
+end
+
+

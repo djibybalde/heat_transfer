@@ -1,14 +1,19 @@
-TCNN model using heat transfer data 
-===================================
+TCN model using heat transfer data 
+=================================== 
 
-|   |   |   |   |
-|---|---|---|---|
-|   |   |![Intermediate images](reports/intermediate_predicted.gif)|   |
-|   |   |   |   |
+TCN Intermediate images (predicted images during training)  
 
-Project organization 
+<a href="https://github.com/djibybalde/HeatTransfer/tree/master/data/intermediate">
+    <img src="reports/intermediate_predicted.gif"
+    align="center"
+    width="400" 
+    height="400"
+    title="Intermediate images">
+</a>
 
--------------------- 
+
+Organization of the project 
+--------------------------- 
 
     ├── README.md           <- Organizational chart of this project.
     │
@@ -47,8 +52,4 @@ Project organization
     └── TODO...             <- TODO -------- 
 
 
-------- 
-
-
-![Organizational chart](docs/README.PNG)
-
+-------------------------------------------- 

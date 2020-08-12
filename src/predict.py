@@ -1,6 +1,5 @@
 """
 heat_transfer/src/predict.py
-
 """
 
 import os

@@ -1,6 +1,5 @@
 """
-heat_transfer/src/training.py
-
+heat_transfer/src/train.py
 """
 
 import os
@@ -227,4 +226,4 @@ def train_model(data_root,
 
 # Run
 root_path = '../data/'
-train_model(data_root=root_path, batch_size=100, n_epochs=2000, val_split=0.2)
+train_model(data_root=root_path, batch_size=100, n_epochs=2_000, val_split=0.2)

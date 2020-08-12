@@ -1,6 +1,5 @@
 """
-heat_transfer/src/process_data.py
-
+heat_transfer/src/process.py
 """
 
 import os
@@ -66,11 +65,12 @@ class ProcessData:
         # Ignore the constant variables in order to scale the data.
         params = params[columns[:-4]]
 
-        # Scaling: center and reduce.
+        # Scaling: center and reduce (mean = 0, standard deviation = 1).
         scaled_params = (params - np.mean(params)) / np.std(params)
 
-        # Add constant of one in the data. Note that constant = 556.
-        scaled_params['constant'] = constant / 556.0
+        # Add constant of one in the data. Note that the sum of all constants is 556.
+        # scaled_params['constant'] = constant / 556.0
+        scaled_params['constant'] = 1.0
 
         # From DataFrame to array.
         scaled_params = np.array(scaled_params)
@@ -110,7 +110,7 @@ class ProcessData:
         image_array = np.empty((len(images_names),) + self.image_size + (3,))
         image_array[np.arange(len(images_names))] = images_list
 
-        # Scale to [0, 1] and convert to float. For scaling to [-1, 1] use (images_list - 127.5)/127.5.
+        # Scale to [0, 1] and convert to float. For scaling to [-1, 1] use (images - 127.5)/127.5.
         image_array = image_array.astype('float32') / 255.0
 
         return images_idx, image_array
@@ -126,7 +126,7 @@ class ProcessData:
             save_data (bool): Whether or not to save the data in the data_path.
 
         Returns:
-            Four samples (array type): x and y train samples and x and y test samples.
+            Return two tuples (four array samples): (x and y train samples) and (x and y test samples).
 
         """
 

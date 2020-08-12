@@ -1,0 +1,13 @@
+Git instructions (links)
+
+Upstream : https://github.community/t/how-to-deal-with-refusing-to-merge-unrelated-histories-error/1372
+
+git branch --set-upstream-to origin/master
+git pull --allow-unrelated-histories
+git push
+
+Remove files : https://devconnected.com/how-to-remove-files-from-git-commit/
+
+
+
+

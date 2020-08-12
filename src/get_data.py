@@ -1,6 +1,5 @@
 """
 heat_transfer/src/get_data.py
-
 """
 
 import os
@@ -57,7 +56,7 @@ def save_data(data_path,
     Save generated images and the corresponding parameters.
 
     Args:
-        data_path (str): Root directory of the data (where the row, generated, precessed data live).
+        data_path (str): Root directory of the data (where the raw, generated, precessed data live).
         input_size (int): Size of the sample to be generated using a uniform distribution.
         output_size (int): Number of possible values for each parameter.
         use_bounds (bool): Whether or not to use the min (low) and max (high) of the Excel file data.
@@ -71,7 +70,7 @@ def save_data(data_path,
     """
 
     # Create a path where to save the data.
-    out_data = os.path.join(data_path, 'row/')
+    out_data = os.path.join(data_path, 'raw/')
     if not os.path.exists(out_data):
         os.makedirs(out_data)
     else:
@@ -178,5 +177,5 @@ def save_data(data_path,
 
 
 # Run
-root_path = '../data/'
-save_data(root_path, input_size=3_000, use_bounds=False, verbose=True)
+root_path = '../data'
+save_data(root_path, input_size=3_000, use_bounds=True, verbose=True)

@@ -1,6 +1,5 @@
 """
-heat_transfer/src/evaluate.py
-
+heat_transfer/src/visualize.py
 """
 
 import os
@@ -17,7 +16,7 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 sns.set(color_codes=True)
 
 # Make a gif animation.
-print(colored('\nMaking a GIF...', 'blue'))
+print(colored('\nMaking a GIF animation...', 'blue'))
 inter_images = []
 inter_path = glob.glob('../data/intermediate/*.png')
 for p in inter_path:
@@ -39,7 +38,6 @@ def make_grid(images_path, out_grid, real=True, K=10):
 
     for k in range(K):
         for i, j in enumerate(idx[n:n + nn]):
-
             plt.subplot(rows, cols, i + 1)
             plt.imshow(images[i + n, :, :])
             plt.title('img{:04d}'.format(j), fontsize=10)
@@ -88,14 +86,44 @@ for file in os.listdir(grid_output_path):
     if os.path.exists(file_p) and not file_p.endswith('tiff'):
         os.remove(file_p)
 
-# Using Scikit-Learn libraries to compute MSE, MAE and R-square.
 # Read the images data.
-_, real_images = ProcessData('../data/test/y_test/').process_images(raw=False)
-_, fake_images = ProcessData('../data/predicted/').process_images(raw=False)
+idx_real, images_real = ProcessData('../data/test/y_test/').process_images(raw=False)
+idx_fake, images_fake = ProcessData('../data/predicted/').process_images(raw=False)
 
-# Reshape the matrix pixels to one column.
-real_reshaped = real_images.reshape(-1, )
-fake_reshaped = fake_images.reshape(-1, )
+idx = [i for i, j in zip(idx_real, idx_fake) if i == j]
+mse = []
+mae = []
+for k in range(images_real.shape[0]):
+    if np.all(idx == sorted(idx)):  # images are sorted by index.
+        mn = images_real[k, :, :].shape[0] * images_real[k, :, :].shape[1]
+
+        # TODO: https://www.pyimagesearch.com/2014/09/15/python-compare-two-images/
+        se = (np.sum((images_real[k, :, :] - images_fake[k, :, :]) ** 2)) / mn
+        ae = (np.sum(abs(images_real[k, :, :] - images_fake[k, :, :]))) / mn
+        mse.append(round(se, 5))
+        mae.append(round(ae, 5))
+
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
+sns.distplot(mse, bins=200, hist=True, color='green', ax=ax1, label='MSE: Histogram')
+sns.distplot(mse, bins=200, hist=False, color='blue', ax=ax1, label='MSE: Density curve')
+sns.distplot(mae, bins=200, hist=True, color='green', ax=ax2, label='MAE: Histogram')
+sns.distplot(mae, bins=200, hist=False, color='blue', ax=ax2, label='MAE: Density curve')
+
+ax1.text(0.125, 150., r'$\mu = {:0.3f}$'.format(np.mean(mse)))
+ax1.text(0.125, 140., r'$\sigma = {:0.3f}$'.format(np.std(mse)))
+ax2.text(0.350, 17.5, r'$\mu = {:0.3f}$'.format(np.mean(mae)))
+ax2.text(0.350, 16.2, r'$\sigma = {:0.3f}$'.format(np.std(mae)))
+
+ax1.set_ylabel('Probability Density'), ax1.set_xlabel('Mean Squared Error')
+ax2.set_ylabel('Probability Density'), ax2.set_xlabel('Mean Absolute Error')
+ax1.legend(), ax2.legend()
+
+plt.savefig('../reports/' + 'mse_mae.png')
+
+# Using Scikit-Learn libraries to compute MSE, MAE and R-square.
+# Reshape the pixels matrix to one column.
+real_reshaped = images_real.reshape(-1, )
+fake_reshaped = images_fake.reshape(-1, )
 
 # Compute the MSE, MAE and R-square.
 mse = np.round(mean_squared_error(real_reshaped, fake_reshaped), 3)
@@ -109,17 +137,19 @@ error = fake_reshaped - real_reshaped
 
 # Plot an histogram and density of the errors.
 plt.figure(figsize=(10, 6))
-sns.distplot(error, bins=100, hist=True, color='blue', vertical=True)
-sns.distplot(error, bins=100, hist=False, color='red', vertical=True)
+sns.distplot(error, bins=130, hist=True, color='cyan', vertical=True)
+sns.distplot(error, bins=130, hist=False, color='red', vertical=True)
 plt.title('Histogram and density of the Errors', fontsize=17)
 plt.xlabel('Errors counted')
 plt.ylabel('Errors values')
 plt.ylim([-0.5, 0.5])
+plt.text(15.0, 0.40, r'$\mu_\epsilon = {:0.3f}$'.format(error.mean()))
+plt.text(15.0, 0.35, r'$\sigma_\epsilon = {:0.3f}$'.format(error.std()))
+
 plt.savefig('../reports/' + 'ErrorsHistogram.png')
 print(colored('Histogram of the errors is saved in "../reports/" folder.', 'green'))
 plt.show()
 
-
 # TODO: look at a metric for the performance of the model. ideas: Confusion matrix
 # TODO: How to modify the input size of the data such that images from the model architecture ?
-# Rename and the project, delete it from the GitLab, drop .idea, _pycahe_, run all the scripe again, and push
+# Comparing two images: https://www.pyimagesearch.com/2014/09/15/python-compare-two-images/
